@@ -190,7 +190,7 @@ Flask is simple to start, but flexible enough to scale into larger applications.
 
 ---
 
-## Part I
+## Part I - Basic setup
 Create a file called `app.py`
 
 ```python
@@ -222,7 +222,15 @@ Create `index.html`
 </body>
 ```
 
-Do command 
+Do the following command:
+
+```bash
+conda create -n flask python=3.11
+```
+
+```bash
+conda activate flask
+```
 
 ```bash
 pip install -r requirements.txt
@@ -234,7 +242,7 @@ Run command
 python app.py
 ```
 
-## Part II
+## Part II - Add Input and Button 
 
 Add the following to `index.html`
 ```html
@@ -295,7 +303,7 @@ Since we need to render the `main.html` please create a new file in `templates`
     <h2>Main Menu for {{name}} </h2>
     
     </div>
-</body>>
+</body>
 ```
 
 Also add `request` to the import so that it will be 
@@ -306,7 +314,7 @@ from flask import Flask, render_template, request
 
 Then run the command `python app.py`
 
-## Part III
+## Part III - Add Chatbot Function and Button
 Add a button for chatbot
 
 add the following to `main.html`
@@ -342,6 +350,7 @@ Create a file `chatbot.html`
     </div>
 </body>
 ```
+
 So we detect an error because we did not add `/llama` action in `app.py`.
 
 Add the following:
@@ -369,7 +378,7 @@ So we have another error! Now we know why. Add the following file `llama.html`
 </body>
 ```
 
-Why there is another error?
+Please run `python app.py` first. Why there is another error?
 
 Add the following to `app.py`
 ```python
@@ -387,7 +396,7 @@ def llama_result():
 
 also add the following to the front, after import:
 ```python
-import Groq
+from groq import Groq
 
 client = Groq()
 ```
@@ -516,3 +525,69 @@ Error again! This time we need `llama_result.html`
     </div>
 </body>
 ```
+
+## PART IV - Add DBS Prediction Button
+
+Copy the `chatbot` button and rename to `DBS prediction` in `main.html`
+
+```html
+        <form action="/dbs" method="post">
+            <input type = "submit" value="DBS Share Price Prediction">
+        </form>
+```
+
+Then add the following:
+
+```python
+@app.route("/dbs",methods=["GET","POST"])
+def dbs():
+    return(render_template("dbs.html"))
+```
+
+Next we add `dbs.html`
+```html
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+    <h2>Please enter Sing to USD rate (eg 1.3)</h2>
+    <form action="/dbs_prediction" method="post">
+        <input type = "number" step="0.01" name = "q">
+        <input type = "submit" value="Enter">
+    </form>
+    </div>
+</body>
+```
+
+Then we add the `@app.route`
+
+```python
+@app.route("/dbs_prediction",methods=["GET","POST"])
+def dbs_prediction():
+    q = float(request.form.get("q"))
+    model = joblib.load("DBS_SGD_model.pkl")
+    r = model.predict([[q]])
+    return(render_template("dbs_prediction.html",r=r[0][0]))
+```
+
+next we need to add `dbs_prediction.html`
+
+```html
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+    <h2>Predicted price {{r}}</h2>
+    <form action="/main" method="post">
+        <input type = "submit" value="Main">
+    </form>
+    </div>
+</body>
+```
+
+The final solution is in the solution folder.
+
