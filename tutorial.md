@@ -156,7 +156,7 @@ pip install -r requirements.txt
 
 ## 5. Running the App
 
-### Option 1: Direct run
+### Direct run
 
 ```
 python app.py
@@ -191,7 +191,7 @@ Flask is simple to start, but flexible enough to scale into larger applications.
 ---
 
 ## Part I - Basic setup
-Create a file called `app.py`
+- Create a file called `app.py`
 
 ```python
 # app.py - flask app
@@ -208,7 +208,8 @@ if __name__ == "__main__":
     app.run()
 ```
 
-Create `index.html`
+- Create a folder called `templates`
+- Inside the `templates` folder, create `index.html`
 ```html
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -221,7 +222,9 @@ Create `index.html`
     </div>
 </body>
 ```
+- Change the title to anything.
 
+### Running the app
 Do the following command:
 
 ```bash
@@ -242,7 +245,7 @@ Run command
 python app.py
 ```
 
-## Part II - Add Input and Button 
+## Part II - Add User Input with Button and Main Page 
 
 Add the following to `index.html`
 ```html
@@ -274,11 +277,15 @@ So the final `index.html` will be as follows:
 ```
 The addition is a form that get text input from user after user hit submit.
 
+Run the app now with `python app.py`
+
 Watch out for 
 ```html
 <form action="/" method="post">
 ```
-action route point to the program should trigger, in this case it is a loop. so change to the following:
+Action route point to the program function should trigger, in this case it is a loop. 
+
+Next we are going to let it trigger a different function, so change to the following:
 
 ```html
 <form action="/main" method="post">
