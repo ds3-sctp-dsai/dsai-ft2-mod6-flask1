@@ -130,7 +130,20 @@ Lists Python dependencies.
 Example:
 
 ```
+# Flask Related
 flask
+gunicorn
+
+# LLM related
+groq
+dotenv
+
+# Machine learning realted
+scikit-learn
+joblib
+
+# database related
+pysqlite3
 ```
 
 Install with:
