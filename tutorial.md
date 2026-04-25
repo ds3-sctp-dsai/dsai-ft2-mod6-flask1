@@ -249,7 +249,7 @@ python app.py
 
 Add the following to `index.html`
 ```html
-    <form action="/main" method="post">
+    <form action="/" method="post">
         <h4>Please enter your name : </h4>
         <input type = "text" name = "q">
         <input type = "submit" value="Enter">
@@ -277,7 +277,7 @@ So the final `index.html` will be as follows:
 ```
 The addition is a form that get text input from user after user hit submit.
 
-Run the app now with `python app.py`
+Run the app now with `python app.py`.
 
 Watch out for 
 ```html
@@ -319,6 +319,62 @@ Also add `request` to the import so that it will be
 from flask import Flask, render_template, request
 ```
 
+### Setup as of Now
+
+`app.py`
+```python
+# app.py - flask app
+
+from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
+@app.route("/",methods=["GET","POST"])
+def index():
+    return(render_template("index.html"))
+
+@app.route("/main",methods=["GET","POST"])
+def main():
+    name = request.form.get("q")
+    return(render_template("main.html", name=name))
+
+if __name__ == "__main__":
+    app.run()
+```
+
+`index.html`
+```html
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+    <h2>Change your Title</h2>
+        <form action="/main" method="post">
+            <h4>Please enter your name : </h4>
+            <input type = "text" name = "q">
+            <input type = "submit" value="Enter">
+        </form>
+
+    </div>
+</body>
+```
+
+`main.html`
+```html
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+    <h2>Main Menu for {{name}} </h2>
+    
+    </div>
+</body>
+```
+
 Then run the command `python app.py`
 
 ## Part III - Add Chatbot Function and Button
@@ -358,7 +414,7 @@ Create a file `chatbot.html`
 </body>
 ```
 
-So we detect an error because we did not add `/llama` action in `app.py`.
+If we run the app now, we will detect error if we hit the `llama` button because we did not add `/llama` action in `app.py`. However, if we hit main button, it will bring us back to the main page.
 
 Add the following:
 ```python
@@ -366,7 +422,7 @@ Add the following:
 def llama():
     return(render_template("llama.html"))
 ```
-So we have another error! Now we know why. Add the following file `llama.html`
+Add the following file `llama.html`.
 
 ```html
 <head>
@@ -385,9 +441,9 @@ So we have another error! Now we know why. Add the following file `llama.html`
 </body>
 ```
 
-Please run `python app.py` first. Why there is another error?
 
 Add the following to `app.py`
+
 ```python
 @app.route("/llama_result",methods=["GET","POST"])
 def llama_result():
@@ -401,58 +457,14 @@ def llama_result():
     return(render_template("llama_result.html",r=r))
 ```
 
-also add the following to the front, after import:
+Add the following to the front, after import:
 ```python
 from groq import Groq
 
 client = Groq()
 ```
 
-final `app.py` should be 
-
-```python
-# app.py - flask app
-
-from flask import Flask, render_template, request
-from groq import Groq
-
-client = Groq()
-
-app = Flask(__name__)
-
-@app.route("/",methods=["GET","POST"])
-def index():
-    return(render_template("index.html"))
-
-@app.route("/main",methods=["GET","POST"])
-def main():
-    name = request.form.get("q")
-    return(render_template("main.html", name=name))
-
-@app.route("/chatbot",methods=["GET","POST"])
-def chatbot():
-    return(render_template("chatbot.html"))
-
-@app.route("/llama",methods=["GET","POST"])
-def llama():
-    return(render_template("llama.html"))
-
-@app.route("/llama_result",methods=["GET","POST"])
-def llama_result():
-    q = request.form.get("q")
-    r = client.chat.completions.create(
-    model="llama-3.1-8b-instant",
-    messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": q}])
-    r = r.choices[0].message.content
-    return(render_template("llama_result.html",r=r))
-
-if __name__ == "__main__":
-    app.run()
-```
-
-Another error, don't worry lets fixed one by one. First create a file called `.env` and use the following:
+Next we need to create an `.env` as follows:
 
 ```text
 GROQ_API_KEY=
@@ -467,57 +479,7 @@ if os.path.exists('.env'):
    load_dotenv()
 ```
 
-The final file should be 
-```python
-# app.py - flask app
-
-from flask import Flask, render_template, request
-from groq import Groq
-
-import os
-from dotenv import load_dotenv
-if os.path.exists('.env'):
-   load_dotenv()
-
-
-client = Groq()
-
-app = Flask(__name__)
-
-@app.route("/",methods=["GET","POST"])
-def index():
-    return(render_template("index.html"))
-
-@app.route("/main",methods=["GET","POST"])
-def main():
-    name = request.form.get("q")
-    return(render_template("main.html", name=name))
-
-@app.route("/chatbot",methods=["GET","POST"])
-def chatbot():
-    return(render_template("chatbot.html"))
-
-@app.route("/llama",methods=["GET","POST"])
-def llama():
-    return(render_template("llama.html"))
-
-@app.route("/llama_result",methods=["GET","POST"])
-def llama_result():
-    q = request.form.get("q")
-    r = client.chat.completions.create(
-    model="llama-3.1-8b-instant",
-    messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": q}])
-    r = r.choices[0].message.content
-    return(render_template("llama_result.html",r=r))
-
-if __name__ == "__main__":
-    app.run()
-```
-
-Error again! This time we need `llama_result.html`
-
+Next, we need a html file called `llama_result.html`. Please create a file and paste the follwoing:
 ```html
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -533,7 +495,83 @@ Error again! This time we need `llama_result.html`
 </body>
 ```
 
-## PART IV - Add DBS Prediction Button
+### Firnal Setup for This Section
+The final `app.py` should be 
+```python
+# app.py - flask app
+
+from flask import Flask, render_template, request
+from groq import Groq
+import os
+
+from dotenv import load_dotenv
+if os.path.exists('.env'):
+   load_dotenv()
+
+
+client = Groq()
+
+app = Flask(__name__)
+
+@app.route("/",methods=["GET","POST"])
+def index():
+    return(render_template("index.html"))
+
+@app.route("/main",methods=["GET","POST"])
+def main():
+    name = request.form.get("q")
+    return(render_template("main.html", name=name))
+
+@app.route("/chatbot",methods=["GET","POST"])
+def chatbot():
+    return(render_template("chatbot.html"))
+
+@app.route("/llama",methods=["GET","POST"])
+def llama():
+    return(render_template("llama.html"))
+
+@app.route("/llama_result",methods=["GET","POST"])
+def llama_result():
+    q = request.form.get("q")
+    r = client.chat.completions.create(
+    model="llama-3.1-8b-instant",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": q}])
+    r = r.choices[0].message.content
+    return(render_template("llama_result.html",r=r))
+
+if __name__ == "__main__":
+    app.run()
+```
+
+`main.html`
+```html
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+    <h2>Main Menu for {{name}} </h2>
+    
+        <form action="/chatbot" method="post">
+            <input type = "submit" value="Chatbot">
+        </form>
+
+    </div>
+</body>
+```
+- `index.html` - no change
+
+Need the following files:
+- `chatbot.html`
+- `llama.html`
+- `llama_result.html`
+
+We should have 5 html files including `index.html` and `main.html`
+
+## PART IV - Add DBS Prediction Button (Self - Practice)
 
 Copy the `chatbot` button and rename to `DBS prediction` in `main.html`
 
@@ -579,7 +617,7 @@ def dbs_prediction():
     return(render_template("dbs_prediction.html",r=r[0][0]))
 ```
 
-next we need to add `dbs_prediction.html`
+Next we need to add `dbs_prediction.html`
 
 ```html
 <head>
