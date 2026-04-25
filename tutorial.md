@@ -634,5 +634,11 @@ Next we need to add `dbs_prediction.html`
 </body>
 ```
 
+Finally, add the following import
+```python
+import joblib
+```
+
+
 The final solution is in the solution folder.
 

@@ -5,9 +5,9 @@ from groq import Groq
 import joblib
 import os
 
-# Only for local testing in VSCode
+
 # Create .env for GROQ_API_KEY
-# Comment the following before pushing to cloud platform
+# Comment it for certain cloud platform such as AWS
 from dotenv import load_dotenv
 if os.path.exists('.env'):
    load_dotenv()
